@@ -10,7 +10,7 @@
 - `src/BUILD.md` … この手順書。
 
 ## 公開URL
-https://yasu-topica.github.io/invoice/
+https://creative-by-yasu.github.io/invoice/
 
 ## ビルド方法（React → 単一HTML）
 Node環境で:
