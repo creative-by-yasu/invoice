@@ -95,8 +95,17 @@ function App() {
         e.registrationNumber = "登録番号はTに続く13桁の半角数字で入力してください。";
       }
     }
+
+    // 件名の必須化
+    if (!basicInfo.subject.trim()) e.subject = "件名を入力してください。";
+
+    // 明細（案件名・品名・単価）の必須化
+    if (items.some(it => !String(it.projectName).trim())) e.itemProjectName = "案件名を入力してください。";
+    if (items.some(it => !String(it.name).trim())) e.itemName = "品名を入力してください。";
+    if (items.some(it => !String(it.price).trim())) e.itemPrice = "単価を入力してください。";
+
     return e;
-  }, [basicInfo]);
+  }, [basicInfo, items]);
 
   const hasErrors = Object.keys(errors).length > 0;
 
@@ -287,7 +296,7 @@ function App() {
         return '立て替えた税込分を入力してください。\n超えた分は指定された上限金額を入力してください。\n税率は非課税としてください。';
       }
     }
-    return '150,000'; // プレースホルダーもカンマ付きに
+    return '単価を入力してください。';
   };
 
   const handlePrint = () => {
@@ -474,15 +483,18 @@ function App() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">件名</label>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                  件名 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span>
+                </label>
                 <input
                   type="text"
                   name="subject"
                   placeholder="2026年○月分 ○○案件 PR費用"
                   value={basicInfo.subject}
                   onChange={handleBasicInfoChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none placeholder-gray-400"
+                  className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none placeholder-gray-400 ${errors.subject ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                 />
+                {errors.subject && <p className="text-red-500 text-xs mt-1">{errors.subject}</p>}
               </div>
             </div>
 
@@ -642,10 +654,10 @@ function App() {
           {/* PC用 ヘッダー行 (見切れないように固定幅を広めに設定) */}
           <div className="hidden lg:flex gap-2 items-start mb-2 pr-12 text-sm font-medium text-gray-700">
             <div className="w-[130px] pl-1 flex-shrink-0">納品月</div>
-            <div className="w-[160px] pl-1 flex-shrink-0">案件名</div>
-            <div className="flex-1 pl-1 min-w-[150px]">品名</div>
+            <div className="w-[160px] pl-1 flex-shrink-0">案件名 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></div>
+            <div className="flex-1 pl-1 min-w-[150px]">品名 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></div>
             <div className="w-[60px] pl-1 text-center flex-shrink-0">数量</div>
-            <div className="w-[210px] pl-1 text-center flex-shrink-0">単価{isTaxExempt ? '' : '(税抜)'}</div>
+            <div className="w-[210px] pl-1 text-center flex-shrink-0">単価{isTaxExempt ? '' : '(税抜)'} <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></div>
             {!isTaxExempt && <div className="w-[80px] pl-1 text-center flex-shrink-0">税率</div>}
             <div className="w-[40px] pl-1 text-center flex-shrink-0" title="源泉徴収税の対象にする場合はチェック">源泉</div>
           </div>
@@ -665,23 +677,23 @@ function App() {
                     />
                   </div>
                   <div className="w-full lg:w-[160px] min-w-0 flex-shrink-0">
-                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">案件名</label>
+                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">案件名 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></label>
                     <input
                       type="text"
                       placeholder="案件名"
                       value={item.projectName}
                       onChange={(e) => handleItemChange(item.id, 'projectName', e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-gray-400"
+                      className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-gray-400 ${!String(item.projectName).trim() ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     />
                   </div>
                   <div className="w-full lg:flex-1 min-w-0">
-                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">品名</label>
+                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">品名 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></label>
                     <input
                       type="text"
                       placeholder="項目名を入力してください。"
                       value={item.name}
                       onChange={(e) => handleItemChange(item.id, 'name', e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-gray-400"
+                      className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-gray-400 ${!String(item.name).trim() ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     />
                   </div>
                   <div className="w-full lg:w-[60px] min-w-0 flex-shrink-0">
@@ -696,7 +708,7 @@ function App() {
                     />
                   </div>
                   <div className="relative group flex flex-col w-full lg:w-[210px] min-w-0 flex-shrink-0">
-                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">単価{isTaxExempt ? '' : '(税抜)'}</label>
+                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">単価{isTaxExempt ? '' : '(税抜)'} <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></label>
                     <div className="relative w-full">
                       <span className="absolute left-2 lg:left-3 top-2.5 text-gray-500 text-sm">¥</span>
                       <textarea
@@ -709,7 +721,7 @@ function App() {
                           handleItemChange(item.id, 'price', formattedValue);
                         }}
                         rows={1}
-                        className={`w-full p-2 pl-6 lg:pl-7 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-gray-400 resize-none overflow-hidden ${
+                        className={`w-full p-2 pl-6 lg:pl-7 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-gray-400 resize-none overflow-hidden ${!String(item.price).trim() ? 'border-red-500 bg-red-50' : 'border-gray-300'} ${
                           item.type === 'reimbursement'
                             ? (isTaxExempt ? 'min-h-[60px] placeholder:text-[10.5px] placeholder:leading-tight' : 'min-h-[80px] placeholder:text-[9.5px] placeholder:leading-tight')
                             : 'h-[40px] leading-relaxed'
