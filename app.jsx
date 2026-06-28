@@ -99,7 +99,8 @@ function App() {
     // 件名の必須化
     if (!basicInfo.subject.trim()) e.subject = "件名を入力してください。";
 
-    // 明細（案件名・品名・単価）の必須化
+    // 明細（納品月・案件名・品名・単価）の必須化
+    if (items.some(it => !String(it.deliveryMonth).trim())) e.itemDeliveryMonth = "納品月を入力してください。";
     if (items.some(it => !String(it.projectName).trim())) e.itemProjectName = "案件名を入力してください。";
     if (items.some(it => !String(it.name).trim())) e.itemName = "品名を入力してください。";
     if (items.some(it => !String(it.price).trim())) e.itemPrice = "単価を入力してください。";
@@ -653,7 +654,7 @@ function App() {
 
           {/* PC用 ヘッダー行 (見切れないように固定幅を広めに設定) */}
           <div className="hidden lg:flex gap-2 items-start mb-2 pr-12 text-sm font-medium text-gray-700">
-            <div className="w-[130px] pl-1 flex-shrink-0">納品月</div>
+            <div className="w-[130px] pl-1 flex-shrink-0">納品月 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></div>
             <div className="w-[160px] pl-1 flex-shrink-0">案件名 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></div>
             <div className="flex-1 pl-1 min-w-[150px]">品名 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></div>
             <div className="w-[60px] pl-1 text-center flex-shrink-0">数量</div>
@@ -668,12 +669,12 @@ function App() {
               <div key={item.id} className="flex flex-col lg:flex-row gap-3 lg:gap-2 items-start lg:items-center bg-gray-50 lg:bg-transparent p-4 lg:p-0 rounded-lg border lg:border-none border-gray-100">
                 <div className="flex-grow flex flex-col lg:flex-row gap-4 lg:gap-2 w-full items-start lg:items-center">
                   <div className="w-full lg:w-[130px] min-w-0 flex-shrink-0">
-                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">納品月</label>
+                    <label className="lg:hidden text-xs font-medium text-gray-500 mb-1 block">納品月 <span className="text-[10px] text-white bg-red-500 px-1 py-0.5 rounded leading-none">必須</span></label>
                     <input
                       type="month"
                       value={item.deliveryMonth}
                       onChange={(e) => handleItemChange(item.id, 'deliveryMonth', e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
+                      className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white ${!String(item.deliveryMonth).trim() ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     />
                   </div>
                   <div className="w-full lg:w-[160px] min-w-0 flex-shrink-0">
